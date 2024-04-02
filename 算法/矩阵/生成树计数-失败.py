@@ -5,7 +5,7 @@
 import numpy as np
 
 
-def judge_linjie(i, j) -> bool:
+def judge_linjie(i, j, m) -> bool:
     x1 = i // m
     y1 = i % m
     x2 = j // m
@@ -13,8 +13,6 @@ def judge_linjie(i, j) -> bool:
     if lst[x1][y1] != 'E' or lst[x2][y2] != 'E':
         return False
     else:
-        if x1 == x2 and y2 == y1:
-            return False
         if x1 == x2:
             return abs(y1 - y2) == 1
         if y1 == y2:
@@ -22,15 +20,21 @@ def judge_linjie(i, j) -> bool:
 
 
 n, m = map(int, input().split())
-lst = [input().split() for i in range(n)]
+lst = [input() for i in range(n)]
+print(lst)
 total = n * m
 linjie = [[0] * total for _ in range(total)]
 for i in range(total):
-    for j in range(total):
-        if judge_linjie(i, j):
+
+    for j in range(i + 1, total):
+
+        if i == j: continue
+
+        if judge_linjie(i, j, m):
             linjie[i][j] = 1
+            linjie[j][i] = 1
+print(linjie)
 
 A = np.array(linjie)
-D = np.diag(np.sum(A, axis=1))
-L = D - A
-print(np.linalg.det(L[1:.1:]) % (10 ** 9 + 7))
+
+print(np.linalg.det(A[1:, 1:]))
