@@ -10,5 +10,5 @@ def q_pow(base,exponent)->int:#底数和指数
         if exponent%2==1:
             result*=base
         base*=base#实际上将已得到的数的指数左移
-        exponent//=2
+        exponent>>=2
     return result
