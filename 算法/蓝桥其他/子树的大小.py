@@ -21,17 +21,18 @@
 #     n,m,k=map(int,input().split())
 #     print(ChildtreeSize(n,m,k))
 #
-t = int(input())
-for i in range(t):
-    n, m, k = map(int, input().split())
-    l, r = k, k
-    ans, res = 1, 1
-    while True:
-        res *= m
-        l = l * m - m + 2
-        r = r * m + 1
-        if r > n:
-            break
-        ans += res
-    ans += max(0, n - l + 1)
-    print(ans)
+
+N=int(input())
+for i in range(N):
+    n,m,k=map(int,input().split())
+    l=k
+    level=0
+    count=0
+    while k<=n:
+        l=l*m-(m-2)
+        k=k*m+1
+        count+=m**level
+        level+=1
+    print(count+n-l+1 if l<=n else count)
+
+    m**level
