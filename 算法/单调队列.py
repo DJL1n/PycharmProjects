@@ -71,6 +71,7 @@ for i in range(n):
 # print(min_dp)
 # print(max_dp)
 
+#
 # 纵向找这个子矩阵的最大最小值
 for j in range(m - b + 1):
     for i in range(n - a + 1):
@@ -81,3 +82,54 @@ for j in range(m - b + 1):
             m2 = max_dp[i + k][j] if max_dp[i + k][j] > m2 else m2
         result += m1 * m2
 print(result)
+
+
+# 大佬的方法
+n, m, a, b = map(int, input().split())
+s, num_max, num_min, n_max, n_min, res = [[0] * (n + 2) for _ in range(n + 2)], [], [], [], [], 0
+for i in range(1, n + 1):
+    s[i][1:m + 1] = map(int, input().split())
+
+
+def get_min(a, k, m):
+    tep, q, hh, tt = [], [0] * 1010, 0, -1
+    for i in range(1, m + 1):
+        if hh <= tt and q[hh] <= i - k: hh += 1  # 判断是否出了窗口
+        while hh <= tt and a[i] <= a[q[tt]]: tt -= 1
+        tt, q[tt] = tt + 1, i
+        if i - k >= 0: tep.append(a[q[hh]])
+    return tep
+
+
+def get_max(a, k, m):
+    tep, q, hh, tt = [], [0] * 1010, 0, -1
+    for i in range(1, m + 1):
+        if hh <= tt and q[hh] <= i - k: hh += 1  # 判断是否出了窗口
+        while hh <= tt and a[i] >= a[q[tt]]: tt -= 1
+        tt, q[tt] = tt + 1, i
+        if i - k >= 0: tep.append(a[q[hh]])
+    return tep
+
+
+for i in range(1, n + 1):
+    temp = [0] + get_max(s[i][:m + 1], b, m)
+    num_max.append(temp)
+    temp = [0] + get_min(s[i][:m + 1], b, m)
+    num_min.append(temp)
+for i in range(1, m - b + 2):
+    t1 = [0]
+    for _ in range(n):
+        t1.append(num_max[_][i])
+    t1.append(0)
+    temp = get_max(t1, a, n)
+    n_max.append(temp)
+    t2 = [0]
+    for _ in range(n):
+        t2.append(num_min[_][i])
+    t2.append(0)
+    temp = get_min(t2, a, n)
+    n_min.append(temp)
+for i in range(len(n_max)):
+    for j in range(len(n_max[0])):
+        res += n_max[i][j] * n_min[i][j]
+print(res)
