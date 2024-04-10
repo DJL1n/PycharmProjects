@@ -83,37 +83,43 @@
 #         result += m1 * m2
 # print(result)
 
-# 还是会超时，比之前略强一点，无意间看到单调队列对于窗口的
+# 还是会超时，比之前略强一点，无意间看到单调队列对于窗口的想法
 from collections import deque
 
 n, m, a, b = map(int, input().split())
 matrix = [list(map(int, input().split())) for _ in range(n)]
 result = 0
 
-min_dp=[[0]*m for _ in range(n)]
-max_dp=[[0]*m for _ in range(n)]
-for i in range(n):
-    q1=deque()
-    q2=deque()
-    for j in range(m):
-        while q1 and j - b >= q1[0]: q1.popleft()
-        while q1 and matrix[i][q1[-1]] <= matrix[i][j]: q1.pop()
-        q1.append(j)
-        if j >= b - 1: max_dp[i][j] = matrix[i][q1[0]]
-        while q2 and j - b >= q2[0]: q2.popleft()
-        while q2 and matrix[i][q2[-1]] >= matrix[i][j]: q2.pop()
-        q2.append(j)
-        if j >= b - 1: min_dp[i][j]=matrix[i][q2[0]]
 
-for j in range(b-1,m):
-    q1=deque()
-    q2=deque()
+def max_product_submatrix(matrix, a, b):
+    result = 0
     for i in range(n):
-        while q1 and i-a>=q1[0]:q1.popleft()
-        while q1 and max_dp[q1[-1]]<=max_dp[i][j]:q1.pop()
-        q1.append(i)
-        while q2 and i-a>=q2[0]:q2.popleft()
-        while q2 and max_dp[q2[-1]]>=max_dp[i][j]:q2.pop()
-        q2.append(i)
-        if i>=a-1: result+=max_dp[q1[0]][j]*min_dp[q2[0]][j]
+        max_dp = deque()
+        min_dp = deque()
+        for j in range(m):
+            # 维护最大值的双端队列
+            while max_dp and j - b >= max_dp[0][1]:
+                max_dp.popleft()
+            while max_dp and matrix[i][max_dp[-1][1]] <= matrix[i][j]:
+                max_dp.pop()
+            max_dp.append((matrix[i][j], j))
+            if j >= b - 1:
+                max_val = max_dp[0][0]
+
+            # 维护最小值的双端队列
+            while min_dp and j - b >= min_dp[0][1]:
+                min_dp.popleft()
+            while min_dp and matrix[i][min_dp[-1][1]] >= matrix[i][j]:
+                min_dp.pop()
+            min_dp.append((matrix[i][j], j))
+            if j >= b - 1:
+                min_val = min_dp[0][0]
+
+            # 如果当前行和列都满足要求，计算子矩阵的最大最小值乘积并累加
+            if i >= a - 1 and j >= b - 1:
+                result += max_val * min_val
+    return result
+
+
+result = max_product_submatrix(matrix, a, b)
 print(result)
