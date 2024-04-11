@@ -3,7 +3,7 @@
 日期：2024年04月11日
 """
 
-
+# 邻接矩阵对于松散图效率不高，但是可以记录带权重的图
 class GraphAdjacencyMatrix:
     def __init__(self, num_vertices):
         self.num_vertices = num_vertices

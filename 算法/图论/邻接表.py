@@ -4,7 +4,7 @@
 """
 from collections import defaultdict
 
-
+# 对于松散图效率更高，但是要求图不带权重
 class GraphAdjacencyList:
     def __init__(self):
         self.graph = defaultdict(list)
