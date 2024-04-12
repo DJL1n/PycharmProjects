@@ -13,6 +13,7 @@ def prim(graph):
         for to_vertex, cost in graph[start_vertex].items()
     ]
     heapq.heapify(edges)
+
     minimum_spanning_tree = []
     while edges:
         cost, from_vertex, to_vertex = heapq.heappop(edges)
