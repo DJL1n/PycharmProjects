@@ -15,17 +15,18 @@ def pivot(mylist, l, r):
 
 
 def partition(mylist, l, r, pivot_index):
-    pivot=mylist[pivot_index]
-    start,end=l,r
-    while start<end:
-        while start<end and mylist[start]<pivot:
-            start+=1
-        mylist[end]=mylist[start]
-        while start<end and mylist[end]>pivot:
-            end-=1
-        mylist[start]=mylist[end]
-    mylist[end]=pivot
-    return end
+    pivot_value = mylist[pivot_index]
+    mylist[pivot_index], mylist[r] = mylist[r], mylist[pivot_index]
+    store_index = l
+
+    for i in range(l, r):
+        if mylist[i] < pivot_value:
+            mylist[i], mylist[store_index] = mylist[store_index], mylist[i]
+            store_index += 1
+
+    mylist[store_index], mylist[r] = mylist[r], mylist[store_index]
+    return store_index
+
 
 def quicksort(mylist, l, r):
     if l < r:
