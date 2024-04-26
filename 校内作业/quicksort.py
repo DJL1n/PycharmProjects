@@ -1,18 +1,5 @@
-"""
-作者：legionb
-日期：2024年04月14日
-"""
-
-
 def pivot(mylist, l, r):
-    if r-l==1:
-        return l
-    lst=[]
-    lst.append((l,mylist[l]))
-    lst.append((r,mylist[r]))
-    lst.append(((r-l)//2,mylist[(r-l)//2]))
-    return sorted(lst,key=lambda x:x[1])[1][0]
-
+    return mylist.index(sorted([mylist[l],mylist[r],mylist[(l+r)//2]])[1])
 
 def partition(mylist, l, r, pivot_index):
     pivot_value = mylist[pivot_index]
@@ -36,9 +23,3 @@ def quicksort(mylist, l, r):
         print(mylist)
         quicksort(mylist, l, k - 1)
         quicksort(mylist, k + 1, r)
-
-
-mylist = [23, 12, 31, 21]
-print(mylist)
-quicksort(mylist, 0, len(mylist) - 1)
-print(mylist)
