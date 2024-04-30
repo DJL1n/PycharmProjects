@@ -26,4 +26,4 @@ Her eighth husband, Rashid Rajput, was deported in 2006 to his native Pakistan a
 If convicted, Barrientos faces up to four years in prison.  Her next court appearance is scheduled for May 18.
 """
 
-summarizer(ARTICLE, max_length=130, min_length=30, do_sample=False)
+print(summarizer(ARTICLE, max_length=130, min_length=30, do_sample=False))
