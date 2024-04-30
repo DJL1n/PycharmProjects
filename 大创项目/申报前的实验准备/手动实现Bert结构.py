@@ -7,13 +7,6 @@ import math
 import numpy as np
 from transformers import BertModel
 
-'''
-
-通过手动矩阵运算实现Bert结构
-模型文件下载 https://huggingface.co/models
-
-'''
-
 bert = BertModel.from_pretrained(r"D:\badou\pretrain_model\chinese_bert_likes\bert-base-chinese", return_dict=False)
 state_dict = bert.state_dict()
 bert.eval()
