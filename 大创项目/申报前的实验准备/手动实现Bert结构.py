@@ -7,7 +7,14 @@ import math
 import numpy as np
 from transformers import BertModel
 
-bert = BertModel.from_pretrained(r"D:\badou\pretrain_model\chinese_bert_likes\bert-base-chinese", return_dict=False)
+'''
+
+通过手动矩阵运算实现Bert结构
+模型文件下载 https://huggingface.co/models
+
+'''
+
+bert = BertModel.from_pretrained(r"E:\临时\大赛\大创\bert-base-chinese", return_dict=False)
 state_dict = bert.state_dict()
 bert.eval()
 x = np.array([2450, 15486, 15167, 2110]) #通过vocab对应输入：深度学习
