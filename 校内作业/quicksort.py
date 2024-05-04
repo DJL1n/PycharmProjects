@@ -29,10 +29,19 @@
 #下面是选每一个的开头
 
 def pivot(mylist, l, r):
-    return mylist[l]
+    return l
 
 def partition(mylist, l, r, pivot_index):
+    pivot_value=mylist[pivot_index]
+    mylist[pivot_index],mylist[r]=mylist[r],mylist[pivot_index]
+    store_index=l
 
+    for i in range(l,r+1):
+        if mylist[i]<=pivot_value:
+            mylist[i],mylist[store_index]=mylist[store_index],mylist[i]
+            store_index+=1
+    # mylist[pivot_index], mylist[r] = mylist[r], mylist[pivot_index]
+    return store_index-1
 
 
 def quicksort(mylist, l, r):
