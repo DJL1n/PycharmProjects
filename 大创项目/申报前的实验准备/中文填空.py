@@ -6,7 +6,7 @@ import torch
 from datasets import load_dataset
 
 
-#定义数据集
+# 定义数据集
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, split):
         dataset = load_dataset(path='lansinuote/ChnSentiCorp', split=split)
@@ -31,13 +31,14 @@ print(len(dataset), dataset[0])
 
 from transformers import BertTokenizer
 
-#加载字典和分词工具
+# 加载字典和分词工具
 token = BertTokenizer.from_pretrained('bert-base-chinese')
 
 print(token)
 
+
 def collate_fn(data):
-    #编码
+    # 编码
     data = token.batch_encode_plus(batch_text_or_text_pairs=data,
                                    truncation=True,
                                    padding='max_length',
@@ -45,8 +46,8 @@ def collate_fn(data):
                                    return_tensors='pt',
                                    return_length=True)
 
-    #input_ids:编码之后的数字
-    #attention_mask:是补零的位置是0,其他位置是1
+    # input_ids:编码之后的数字
+    # attention_mask:是补零的位置是0,其他位置是1
     input_ids = data['input_ids']
     attention_mask = data['attention_mask']
     token_type_ids = data['token_type_ids']
@@ -54,12 +55,12 @@ def collate_fn(data):
     labels = input_ids[:, 15].reshape(-1).clone()
     input_ids[:, 15] = token.get_vocab()[token.mask_token]
 
-    #print(data['length'], data['length'].max())
+    # print(data['length'], data['length'].max())
 
     return input_ids, attention_mask, token_type_ids, labels
 
 
-#数据加载器
+# 数据加载器
 loader = torch.utils.data.DataLoader(dataset=dataset,
                                      batch_size=16,
                                      collate_fn=collate_fn,
@@ -76,21 +77,22 @@ print(input_ids.shape, attention_mask.shape, token_type_ids.shape, labels.shape)
 
 from transformers import BertModel
 
-#加载预训练模型
+# 加载预训练模型
 pretrained = BertModel.from_pretrained('bert-base-chinese')
 
-#不训练,不需要计算梯度
+# 不训练,不需要计算梯度
 for param in pretrained.parameters():
     param.requires_grad_(False)
 
-#模型试算
+# 模型试算
 out = pretrained(input_ids=input_ids,
-           attention_mask=attention_mask,
-           token_type_ids=token_type_ids)
+                 attention_mask=attention_mask,
+                 token_type_ids=token_type_ids)
 
 print(out.last_hidden_state.shape)
 
-#定义下游任务模型
+
+# 定义下游任务模型
 class Model(torch.nn.Module):
     def __init__(self):
         super().__init__()
@@ -112,12 +114,12 @@ class Model(torch.nn.Module):
 model = Model()
 
 print(model(input_ids=input_ids,
-      attention_mask=attention_mask,
-      token_type_ids=token_type_ids).shape)
+            attention_mask=attention_mask,
+            token_type_ids=token_type_ids).shape)
 
 from transformers import AdamW
 
-#训练
+# 训练
 optimizer = AdamW(model.parameters(), lr=5e-4)
 criterion = torch.nn.CrossEntropyLoss()
 
@@ -140,7 +142,8 @@ for epoch in range(5):
 
             print(epoch, i, loss.item(), accuracy)
 
-#测试
+
+# 测试
 def test():
     model.eval()
     correct = 0
