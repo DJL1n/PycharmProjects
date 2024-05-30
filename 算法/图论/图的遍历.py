@@ -9,12 +9,14 @@ def find_max(i):
     visited=set()
     q=deque()
     q.append(i)
-    while not q:
+    while q:
         cur=q.popleft()
+        visited.add(cur)
         max_node=max(max(graph[cur]),max_node)
         print(max_node)
         for node in graph[cur]:
-            q.append(cur)
+            if node not in visited:
+                q.append(cur)
     return max_node
 
 
