@@ -12,13 +12,17 @@ def find_max(i):
     while q:
         cur=q.popleft()
         visited.add(cur)
-        max_node=max(max(graph[cur]),max_node)
-        # print(max_node)
-        # print(visited)
-        for node in graph[cur]:
-            if node not in visited:
-                q.append(cur)
-                visited.add(node)
+        if cur in graph:
+            max_node=max(max(graph[cur]),max_node)
+            # print(max_node)
+            # print(visited)
+            for node in graph[cur]:
+                if node not in visited:
+                    # print(node)
+                    q.append(node)
+                    visited.add(node)
+    # print(q)
+    # print(visited)
     return max_node
 
 
@@ -34,8 +38,5 @@ for i in range(M):
 
 res=[]
 for i in range(1,N+1):
-    if i in graph:
-        res.append(find_max(i))
-    else:
-        res.append(i)
+    res.append(find_max(i))
 print(*res)
