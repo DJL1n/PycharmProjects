@@ -70,8 +70,8 @@ def dfs_visit(adj_matrix, s, color, seen, done, time):
                         forward.add((r, j))
                     elif seen[j] < seen[r] and (r, j) not in tree:
                         cross.add((r, j))
-                        print(seen[r],r)
-                        print(seen[j],j)
+                        # print(seen[r],r)
+                        # print(seen[j],j)
 
         if done_flag:
             stack.pop()
@@ -79,3 +79,10 @@ def dfs_visit(adj_matrix, s, color, seen, done, time):
             cur_time += 1
             color[r] = 2
     return tree, forward, back, cross, cur_time
+
+adj_matrix = [[0,1,1,1],[0,0,0,1],[0,0,0,1],[0,0,0,0]]
+tree, forward, back, cross = dfs(adj_matrix)
+print('Tree arcs: {}'.format(tree))
+print('Forward arcs: {}'.format(forward))
+print('Back arcs: {}'.format(back))
+print('Cross arcs: {}'.format(cross))
