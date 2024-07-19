@@ -2,7 +2,7 @@
 作者：legionb
 日期：2024年07月13日
 """
-
+#完美，爽
 
 def find_root(x):
     while disjoint[x] >= 0:
