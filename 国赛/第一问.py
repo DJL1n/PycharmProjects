@@ -9,8 +9,8 @@ df = pd.DataFrame(data, columns=['Time', 'Joint', 'Position_x', 'Position_y', 'T
 # 已知的参数
 r0 = 8.8  # r0 > 0
 a = 0.55  # a > 0
-times = np.arange(0, 451, 1)  # 时间数据列表，取整数
-n = 100  # 子区间数目，建议使用偶数
+times = np.arange(0, 451, 0.1)  # 时间数据列表，取整数
+n = 500  # 子区间数目，建议使用偶数
 theta0_initial = 0  # 初始条件 \theta_0(0) = 0
 L_prime = 2.86  # 第一节与龙头相连的直线长度
 L = 1.65  # 其余节数的直线长度

@@ -64,106 +64,23 @@ def genarate_P(t):
                 return (x_0+c*np.cos(des_angle,y_0+c*np.sin(des_angle)))
     
 
-#生成被撞线
-def generate_line(t,i):
-    
-    
-    if x_i==x_i_1:
-        if y_i<y_i_1:
-            return (1,0,-x_i+a)
-        else:
-            return (1,0,-x_i-a)
-    elif y_i==y_i_1:
-        if x_i>x_i_1:
-            return (0,1,-y_i+a)
-        else:
-            return (0,1,-y_i-a)
-    
-    #一般情况
-    else:
-        #A=k2
-        #B=-1
-        #C=-k2*g_x+g_y
-        #G(g_x,g_y)
-        k2=(y_i_1-y_i)/(x_i_1-x_i)
-        fai2=np.arctan(k2)
-        mu=np.arctan(a/b)
-        if k2>0 and x_i>x_i_1:
-            if fai2>mu:
-                des_angle=fai2-mu
-                g_x=x_i+c*np.cos(des_angle)
-                g_y=y_i+c*np.sin(des_angle)
-            else:
-                des_angle=mu-fai2
-                g_x=x_i+c*np.cos(des_angle)
-                g_y=y_i-c*np.sin(des_angle)
-        elif k2>0 and x_i<x_i_1:
-            if fai2<mu:
-                des_angle=mu-fai2
-                g_x=x_i-c*np.cos(des_angle)
-                g_y=y_i+c*np.sin(des_angle)
-            else:
-                des_angle=fai2-mu
-                g_x=x_i-c*np.cos(des_angle)
-                g_y=y_i-c*np.sin(des_angle)
-        
-        elif k2<0 and x_i<x_i_1:
-            fai2_sup=np.pi-fai2
-            if fai2_sup+mu>np.pi/2:
-                des_angle=fai2_sup+mu-np.pi/2
-                g_x=x_i+c*np.sin(des_angle)
-                g_y=y_i+c*np.cos(des_angle)
-            else:
-                des_angle=np.pi/2-fai2_sup-mu
-                g_x=x_i-c*np.sin(des_angle)
-                g_y=y_i+c*np.cos(des_angle)
-        
-        else:
-            fai2_sup=np.pi-fai2
-            if fai2_sup+mu>np.pi/2:
-                des_angle=fai2_sup+mu-np.pi/2
-                g_x=x_i-c*np.sin(des_angle)
-                g_y=y_i-c*np.cos(des_angle)
-            else:
-                des_angle=np.pi/2-fai2_sup-mu
-                g_x=x_i+c*np.sin(des_angle)
-                g_y=y_i-c*np.cos(des_angle)
-
-        A=k2
-        B=-1
-        C=-k2*g_x+g_y
-        return (A,B,C)
-
-
-#生成与被撞线相交的线
-def generate_line2(x2,y2):
-    A=y2-y_0
-    B=x_0-x2
-    C=y2*(x2-x_0)-x2*(y2-y_0)
-    return A,B,C
-    
-#两线相交得到理论距离
-def calculate_theoretial_dist(A1,B1,C1,A2,B2,C2):
-    # print(A1,B1,C1,A2,B2,C2)
-    #构建增广矩阵
-    coeff_matrix = np.array([[A1, B1], [A2, B2]])  # 系数矩阵
-    const_vector = np.array([-C1, -C2])            # 常数项向量
-
-# 使用numpy的linalg.solve()来解方程组
-    try:
-        solution = np.linalg.solve(coeff_matrix, const_vector)
-        x, y = solution
-        return x,y
-    except np.linalg.LinAlgError:
-        return None
-
-def compare(aaa):
     x_theo,y_theo=intersection
     print(x_theo,y_theo)
     dist=np.sqrt((x_theo-x_0)**2+(y_theo-y_0)**2)
     aaa+=[dist]
     # print(dist)
     # print(c**2)
+    return dist<=c
+
+def generate_line(i,t):
+    A=y_i_1-y_0
+    B=y_i-y_i_1
+    C=y_i*(x_i_1-x_i)-x_i(y_i_1-y_i)
+
+def cal_dist(A,B,C):
+    dist=abs((A*p_x+B*p_y+C)/np.sqrt(A**2+B**2))
+    return dist
+def compare():
     return dist<=c
 
 a=0.15
@@ -208,21 +125,10 @@ for i in range(1,25):
         
         p_x,p_y=genarate_P(t)
         # print(p_x,p_y)
-        A1,B1,C1=generate_line(t,i)
-        print(A1,B1,C1)
-        A2,B2,C2=generate_line2(p_x,p_y)
-        print(A2,B2,C2)
-        # print(2)
-        # plot_linear_functions(A1,B1,C1,A2,B2,C2)
-        intersection=calculate_theoretial_dist(A1,B1,C1,A2,B2,C2)
-        # print(intersection)
-        if not intersection:continue#无交点
-        # print(3)
-        if compare(aaa):
-            possible_result+=[t]
-            # print("//////////////")
-            break
-            
+        A,B,C=generate_line(i,t)
+        dist=cal_dist(A,B,C)
+
+        if compare():possible_result+=[t]
         print(i,i,i)
 print(min(aaa))
 print(min(possible_result))
