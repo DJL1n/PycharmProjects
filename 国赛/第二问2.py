@@ -73,15 +73,16 @@ def genarate_P(t):
     return dist<=c
 
 def generate_line(i,t):
-    A=y_i_1-y_0
-    B=y_i-y_i_1
-    C=y_i*(x_i_1-x_i)-x_i(y_i_1-y_i)
+    A=y_i_1-y_i
+    B=x_i-x_i_1
+    C=x_i_1*y_i-x_i*y_i_1
+    return A,B,C
 
 def cal_dist(A,B,C):
     dist=abs((A*p_x+B*p_y+C)/np.sqrt(A**2+B**2))
     return dist
 def compare():
-    return dist<=c
+    return dist<=a
 
 a=0.15
 b=0.275
@@ -95,7 +96,7 @@ v0_addresses=df[df['Joint']==0]
 # print(000000)
 v1_addresses=df[df['Joint']==1]
 
-possible=np.arange(400,450,0.1)
+possible=np.arange(400,450,0.5)
 
 possible_result=[]
 
@@ -130,5 +131,5 @@ for i in range(1,25):
 
         if compare():possible_result+=[t]
         print(i,i,i)
-print(min(aaa))
+
 print(min(possible_result))

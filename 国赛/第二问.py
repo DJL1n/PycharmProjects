@@ -139,7 +139,7 @@ def generate_line(t,i):
 def generate_line2(x2,y2):
     A=y2-y_0
     B=x_0-x2
-    C=y2*(x2-x_0)-x2*(y2-y_0)
+    C=x2*y_0-x_0*y2
     return A,B,C
     
 #两线相交得到理论距离
@@ -178,7 +178,7 @@ v0_addresses=df[df['Joint']==0]
 # print(000000)
 v1_addresses=df[df['Joint']==1]
 
-possible=np.arange(400,450,0.1)
+possible=np.arange(400,450,0.5)
 
 possible_result=[]
 
