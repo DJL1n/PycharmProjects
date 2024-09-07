@@ -8,8 +8,8 @@ import numpy as np
 
 
 #生成对应时刻的P
-def genarate_P(t):
-    
+def genarate_P():
+    print(x_0,y_0)
     
     if x_0==x_1:#竖直状态
         if y_0>0:
@@ -23,11 +23,11 @@ def genarate_P(t):
             return (x_0+b,y_0+a)
     else:#正常情况
         k=(y_0-y_1)/(x_0-x_1)      #斜率
-        print(k)
+        # print(k)
         fai=np.arctan(k)
-        print(fai)
+        # print(fai)
         mu=np.arctan(a/b)
-        print(mu)
+        # print(mu)
         #斜率为正
         if k>0 and x_0>x_1:
             if fai+mu>np.pi/2:
@@ -46,7 +46,7 @@ def genarate_P(t):
                 return (x_0+c*np.sin(des_angle),y_0-c*np.cos(des_angle))
         #斜率为负
         elif k<0 and x_0<x_1:
-            fai__sup=np.pi-fai#fai的补角cccccc
+            fai__sup=np.pi-fai#fai的补角
             if mu>fai__sup:
                 des_angle=mu-fai__sup
                 return (x_0-c*np.cos(des_angle),y_0-c*np.sin(des_angle))
@@ -61,16 +61,8 @@ def genarate_P(t):
                 return (x_0+c*np.cos(des_angle),y_0+c*np.sin(des_angle))
             else:
                 des_angle=fai__sup-mu
-                return (x_0+c*np.cos(des_angle,y_0+c*np.sin(des_angle)))
+                return (x_0+c*np.cos(des_angle),y_0+c*np.sin(des_angle))
     
-
-    x_theo,y_theo=intersection
-    print(x_theo,y_theo)
-    dist=np.sqrt((x_theo-x_0)**2+(y_theo-y_0)**2)
-    aaa+=[dist]
-    # print(dist)
-    # print(c**2)
-    return dist<=c
 
 def generate_line(i,t):
     A=y_i_1-y_i
@@ -93,10 +85,11 @@ file_path="result.xlsx"
 df=pd.read_excel(file_path)
 v0_addresses=df[df['Joint']==0]
 # print(v0_addresses)
+# print(v0_addresses)
 # print(000000)
 v1_addresses=df[df['Joint']==1]
 
-possible=np.arange(400,450,0.5)
+possible=np.arange(350,450,0.1)
 
 possible_result=[]
 
@@ -104,9 +97,12 @@ for i in range(1,25):
     vi_addresses=df[df['Joint']==i]
     vi_1_addresses=df[df['Joint']==i+1]
     # print(vi_1_addresses)
-    print(i)
+    # print(i)
     for t in possible:
+        t=np.trunc(t*10)//10
+        # print(v0_addresses[v0_addresses['Time']==t].to_dict('records'),t)
         v0_data=v0_addresses[v0_addresses['Time']==t].to_dict('records')[0]
+        
         # print(v0_data)
         # print(22222)
         v1_data=v1_addresses[v1_addresses['Time']==t].to_dict('records')[0]
@@ -124,12 +120,16 @@ for i in range(1,25):
         # print(x_i,y_i)
         x_i_1,y_i_1=vi_1_data['Position_x'],vi_1_data['Position_y']
         
-        p_x,p_y=genarate_P(t)
+        p_x,p_y=genarate_P()
         # print(p_x,p_y)
         A,B,C=generate_line(i,t)
         dist=cal_dist(A,B,C)
+        aaa+=[(dist,t)]
 
-        if compare():possible_result+=[t]
-        print(i,i,i)
+        if compare():
+            possible_result+=[t]
+            break
+        print(i,i,i,t,t,t)
 
+print(min(sub[0] for sub in aaa))
 print(min(possible_result))

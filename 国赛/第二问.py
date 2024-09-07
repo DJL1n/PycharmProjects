@@ -10,7 +10,6 @@ import numpy as np
 #生成对应时刻的P
 def genarate_P(t):
     
-    
     if x_0==x_1:#竖直状态
         if y_0>0:
             return (x_0-a,y_0+b)
@@ -61,7 +60,7 @@ def genarate_P(t):
                 return (x_0+c*np.cos(des_angle),y_0+c*np.sin(des_angle))
             else:
                 des_angle=fai__sup-mu
-                return (x_0+c*np.cos(des_angle,y_0+c*np.sin(des_angle)))
+                return (x_0+c*np.cos(des_angle),y_0+c*np.sin(des_angle))
     
 
 #生成被撞线

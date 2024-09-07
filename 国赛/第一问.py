@@ -9,8 +9,8 @@ df = pd.DataFrame(data, columns=['Time', 'Joint', 'Position_x', 'Position_y', 'T
 # 已知的参数
 r0 = 8.8  # r0 > 0
 a = 0.55  # a > 0
-times = np.arange(0, 451, 0.1)  # 时间数据列表，取整数
-n = 500  # 子区间数目，建议使用偶数
+times = np.arange(0, 451, 0.01)  # 时间数据列表，取整数
+n = 100  # 子区间数目，建议使用偶数
 theta0_initial = 0  # 初始条件 \theta_0(0) = 0
 L_prime = 2.86  # 第一节与龙头相连的直线长度
 L = 1.65  # 其余节数的直线长度
@@ -51,14 +51,6 @@ def solve_alpha(theta, L, r0, a):
         alpha_solution = np.pi / 2
     return alpha_solution
 
-# 计算速度
-def calculate_velocity(theta, dtheta_dt, r0, a):
-    dr_dtheta = a / (2 * np.pi)
-    r_val = r_theta(theta, r0, a)
-    dx_dtheta = dr_dtheta * np.cos(theta) - r_val * np.sin(theta)
-    dy_dtheta = dr_dtheta * np.sin(theta) + r_val * np.cos(theta)
-    velocity = np.sqrt((dx_dtheta * dtheta_dt) ** 2 + (dy_dtheta * dtheta_dt) ** 2)
-    return velocity
 
 # 解微分方程得到 theta0(t) 的值
 theta0_solutions = solve_diff_eq(r0, a, theta0_initial, times)
@@ -69,13 +61,11 @@ for t_idx, t in enumerate(times):
         thetas = []
         alphas = []
         positions = []
-        velocities = []
         theta0 = theta0_solutions[t_idx][0]  # 从数组中提取具体值
         dtheta_dt_0 = diff_eq(theta0, t, r0, a)  # 直接使用微分方程求导数
         thetas.append(theta0)
         x, y, theta_val = calculate_position(theta0, r0, a)
         positions.append((x, y, theta_val))
-        velocities.append(calculate_velocity(theta0, dtheta_dt_0, r0, a))
 
         for i in range(1, N + 1):
             if i == 1:
@@ -87,13 +77,13 @@ for t_idx, t in enumerate(times):
             thetas.append(theta)
             x, y, theta_val = calculate_position(theta, r0, a)
             positions.append((x, y, theta_val))
-            velocities.append(calculate_velocity(theta, dtheta_dt_0, r0, a))  # 使用龙头部分的 dtheta_dt
+            
 
         for i, (position, alpha) in enumerate(zip(positions, alphas)):
             x, y, theta = position
             print(
-                f"Time: {t:.6f}, Joint: {i}, Position: x = {x:.6f}, y = {y:.6f}, theta = {theta:.6f}, Alpha: {alpha:.6f}, Velocity: {velocities[i]:.6f}")
-            new_row=pd.DataFrame({'Time':t, 'Joint':i, 'Position_x':x, 'Position_y':y, 'Theta':theta, 'Alpha':alpha, 'Velocity':velocities[i]}, index=[0])
+                f"Time: {t:.6f}, Joint: {i}, Position: x = {x:.6f}, y = {y:.6f}, theta = {theta:.6f}, Alpha: {alpha:.6f}")
+            new_row=pd.DataFrame({'Time':t, 'Joint':i, 'Position_x':x, 'Position_y':y, 'Theta':theta, 'Alpha':alpha}, index=[0])
             df = pd.concat([df, new_row], ignore_index=True)
     except ValueError as e:
         print(f"Time: {t}, Error: {e}")
