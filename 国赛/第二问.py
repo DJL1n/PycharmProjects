@@ -22,8 +22,8 @@ def genarate_P(t):
             return (x_0+b,y_0+a)
     else:#正常情况
         k=(y_0-y_1)/(x_0-x_1)      #斜率
-        fai=np.atan(k)
-        mu=np.atan(a/b)
+        fai=np.arctan(k)
+        mu=np.arctan(a/b)
         #斜率为正
         if k>0 and x_0>x_1:
             if fai+mu>np.pi/2:
@@ -79,8 +79,8 @@ def generate_line(t,i):
         #C=-k2*g_x+g_y
         #G(g_x,g_y)
         k2=(y_i_1-y_i)/(x_i_1-x_i)
-        fai2=np.atan(k)
-        mu=np.atan(a/b)
+        fai2=np.arctan(k2)
+        mu=np.arctan(a/b)
         if k2>0 and x_i>x_i_1:
             des_angle=fai2-mu
             g_x=x_i+c*np.cos(des_angle)
@@ -132,19 +132,26 @@ def generate_line2(x2,y2):
     
 #两线相交得到理论距离
 def calculate_theoretial_dist(A1,B1,C1,A2,B2,C2):
+    print(A1,B1,C1,A2,B2,C2)
     #构建增广矩阵
-    matrix=np.array([[A1,B1,-C1],[A2,B2,-C2]])
+    coeff_matrix = np.array([[A1, B1], [A2, B2]])  # 系数矩阵
+    const_vector = np.array([-C1, -C2])            # 常数项向量
 
+# 使用numpy的linalg.solve()来解方程组
     try:
-        solution=np.linalg.solve(matrix,[0,0,1])
-        return solution[:2]
+        solution = np.linalg.solve(coeff_matrix, const_vector)
+        x, y = solution
+        return x,y
     except np.linalg.LinAlgError:
         return None
 
 def compare():
     x_theo,y_theo=intersection
+    # print(x_theo,y_theo)
     dist=(x_theo-x_0)**2+(y_theo-y_0)**2
-    return dist>=c**2
+    # print(dist)
+    # print(c**2)
+    return dist<=c**2
 
 a=0.15
 b=0.275
@@ -153,38 +160,52 @@ c=np.sqrt(a**2+b**2)
 file_path="result.xlsx"
 df=pd.read_excel(file_path)
 v0_addresses=df[df['Joint']==0]
-v1_addressed=df[df['Joint']==1]
+# print(v0_addresses)
+# print(000000)
+v1_addresses=df[df['Joint']==1]
 
-possible=[]
+possible=np.arange(1,24,1)
 
 possible_result=[]
 
-for i in possible:
+for i in range(1,2):
     vi_addresses=df[df['Joint']==i]
     vi_1_addresses=df[df['Joint']==i+1]
-    for t in range(300,451):
-        v0_data=v0_addresses[v0_addresses['time']==t]
-        v1_data=v0_addresses[v0_addresses['time']==t]
+    # print(vi_1_addresses)
+    print(i)
+    for t in range(400,401):
+        v0_data=v0_addresses[v0_addresses['Time']==t].to_dict('records')[0]
+        # print(v0_data)
+        # print(22222)
+        v1_data=v1_addresses[v1_addresses['Time']==t].to_dict('records')[0]
 
         x_0,y_0=v0_data['Position_x'],v0_data['Position_y']
         x_1,y_1=v1_data['Position_x'],v1_data['Position_y']
 
+        # print(x_0,x_1)
+        # print(333333)
 
-        vi_data=v0_addresses[vi_addresses['time']==t]
-        vi_1_data=v0_addresses[vi_1_addresses['time']==t]
+        vi_data=vi_addresses[vi_addresses['Time']==t].to_dict('records')[0]
+        vi_1_data=vi_1_addresses[vi_1_addresses['Time']==t].to_dict('records')[0]
 
         x_i,y_i=vi_data['Position_x'],vi_data['Position_y']
+        # print(x_i,y_i)
         x_i_1,y_i_1=vi_1_data['Position_x'],vi_1_data['Position_y']
-
+        
         p_x,p_y=genarate_P(t)
+        print(p_x,p_y)
         A1,B1,C1=generate_line(t,i)
-
+        # print(1)
         A2,B2,C2=generate_line2(p_x,p_y)
-
+        # print(2)
         intersection=calculate_theoretial_dist(A1,B1,C1,A2,B2,C2)
-
+        # print(4)
         if not intersection:continue#无交点
-
+        # print(3)
         if compare():
             possible_result+=[t]
+            # print("//////////////")
             break
+            
+        print(i,i,i)
+print(min(possible_result))
