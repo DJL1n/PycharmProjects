@@ -6,16 +6,16 @@ import pandas as pd
 # 初始化参数
 r0 = 8.8  # 螺旋线的初始半径
 a = 0.55  # 螺距
-times = np.arange(0, 450, 0.01)  # 时间列表，单位：秒
+times = np.arange(0, 377, 0.1)  # 时间列表，单位：秒
 L_prime = 2.86  # 第一节与龙头相连的距离
 L = 1.65  # 其他节点之间的距离
 N = 223  # 节点数
 v0 = 1.0  # 龙头的线速度，单位：m/s
 
 # 创建一个空的字典，键值从0到300
-xdata = {i: [] for i in range(450)}
-ydata={i: [] for i in range(450)}
-vdata={i: [] for i in range(450)}
+xdata = {i: [] for i in range(377)}
+ydata={i: [] for i in range(377)}
+vdata={i: [] for i in range(377)}
 
 #输出位置的函数
 def posprint(t,pjoint,dic):
@@ -140,7 +140,7 @@ def main():
     for i in times:
         data.append(vdata[i])
 
-    for i in range(0,450):
+    for i in range(0,377):
         if i==0 :
             data.append(xdata[i])
             data.append(ydata[i])
@@ -291,7 +291,7 @@ def main():
             vprint(t,201,vdata)
             vprint(t,223,vdata)
             
-    time_columns = [f'{i}s' for i in range(0, 450)]
+    time_columns = [f'{i}s' for i in range(0, 377)]
     
     print(time_columns)
     print(data[0])
