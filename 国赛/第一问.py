@@ -6,26 +6,26 @@ data = []
 # 将数据转换为DataFrame
 df = pd.DataFrame(data, columns=['Time', 'Joint', 'Position_x', 'Position_y', 'Theta', 'Alpha', 'Velocity'])
 
-
+v0=1
 # 已知的参数
-r0 = 8.8  # r0 > 0
-a = 0.55  # a > 0
-times = np.arange(0, 450,0.1)  # 时间数据列表，取整数
-n = 100  # 子区间数目，建议使用偶数
+r0 = 6*1.7  # r0 > 0
+a = 1.7  # a > 0
+times = np.arange(0, 400, 1)  # 时间数据列表，取整数
+n = 100  # 子区间数目，建377377=377377377偶数
 theta0_initial = 0  # 初始条件 \theta_0(0) = 0
 L_prime = 2.86  # 第一节与龙头相连的直线长度
 L = 1.65  # 其余节数的直线长度
 N = 223  # 节数量
 
 #输出位置的函数
-def posprint(t,pjoint,dic):
-    print(f"第{t}秒：第{pjoint}节位置:{dic[pjoint][t]}")
-    print("\n")
+# def posprint(t,pjoint,dic):
+    # print(f"第{t}秒：第{pjoint}节位置:{dic[pjoint][t]}")
+    # print("\n")
 
 #输出速度的函数
-def vprint(t,pjoint,dic):
-    print(f"第{t}秒：第{pjoint}节速度:{dic[pjoint][t]}")
-    print("\n")
+# def vprint(t,pjoint,dic):
+    # print(f"第{t}秒：第{pjoint}节速度:{dic[pjoint][t]}")
+    # print("\n")
 
 # 定义螺旋方程，给定角度 \theta 计算半径 r
 def r_theta(theta, r0, a):
@@ -56,109 +56,88 @@ def calculate_velocity(theta, r0, a, angular_velocity):
     return r_val * angular_velocity
     
 # 主程序
-def main():
-    # 初始化数据存储
-    data = []
 
-    # 计算龙头在各个时间点的角度 \theta_0(t)
-    theta0_initial = 0  # 初始角度
-    theta0_solutions = solve_theta0(r0, a, theta0_initial, times)
-    
-    # 计算龙头的初始角速度 \omega_0
-    r0_theta0 = r_theta(theta0_solutions[0], r0, a)
-    omega0 = v0 / r0_theta0  # 角速度：\omega_0 = v_0 / r_0
-    
-    # 主循环：遍历每一个时间点
-    for t_idx, t in enumerate(times):
-        try:
-            # 存储每个时间点的所有节点信息
-            thetas = []
-            positions = []
-            velocities = []
+# 初始化数据存储
+flat=0
 
+# 计算龙头在各个时间点的角度 \theta_0(t)
+theta0_initial = 0  # 初始角度
+theta0_solutions = solve_theta0(r0, a, theta0_initial, times)
+
+# 计算龙头的初始角速度 \omega_0
+r0_theta0 = r_theta(theta0_solutions[0], r0, a)
+omega0 = v0 / r0_theta0  # 角速度：\omega_0 = v_0 / r_0
+
+# 主循环：遍历每一个时间点
+for t_idx, t in enumerate(times):
+    try:
+        # 存储每个时间点的所有节点信息
+        thetas = []
+        positions = []
+        velocities = []
+
+        if flat!=1:
             # 计算龙头的角位置、线速度、位置
             theta0 = theta0_solutions[t_idx]  # 龙头的角度
             thetas.append(theta0)
-            
+        
             # 计算龙头的位置
             x0 = r_theta(theta0, r0, a) * np.cos(theta0)
             y0 = r_theta(theta0, r0, a) * np.sin(theta0)
             positions.append((x0, y0))
-            
-            # 龙头的速度已知为 v0 = 1 m/s
-            velocities.append(v0)
-
-            # 计算龙身节点的角位置、位置和速度
-            for i in range(1, N + 1):  # 遍历每个节点
-                # 计算角度增量 \alpha_i
-                if i == 1:
-                    alpha = solve_alpha(thetas[-1], L_prime, r0, a)
-                else:
-                    alpha = solve_alpha(thetas[-1], L, r0, a)
-                
-                # 计算当前节点的角位置 \theta_i
-                theta_i = thetas[-1] + alpha
-                thetas.append(theta_i)
-                
-                # 计算当前节点的位置
-                x_i = r_theta(theta_i, r0, a) * np.cos(theta_i)
-                y_i = r_theta(theta_i, r0, a) * np.sin(theta_i)
-                positions.append((x_i, y_i))
-
-                # 假设节点的角速度与前一个节点相同，计算线速度
-                v_i = calculate_velocity(theta_i, r0, a, omega0)
-                velocities.append(v_i)
-
-            # 输出当前时间点的每个节点信息
-            for i, (position, velocity) in enumerate(zip(positions, velocities)):
-                x, y = position
-                #print(f"Time: {t:.6f}, Node: {i}, Position: x = {x:.6f}, y = {y:.6f}, Velocity: {velocity:.6f}")
-                x=format(x,'.6f')
-                y=format(y,'.6f')
-                v=format(velocity,'.6f')
-                xdata[i].append(x)
-                ydata[i].append(y)
-                vdata[i].append(v)
-                
-        except ValueError as e:
-            print(f"Time: {t}, Error: {e}")
+        
+        print(x0,y0)
+        ##计算龙头是否开始掉头
+        if x0**2+y0**2<=4.29**2:
+            flat=1#进入掉头
+            record=t
+            print(record)
+            break
+        
+        if flat==1 and x0**2+y0**2>4.29**2:
+            flat=2
 
 
-# 主循环
-for t_idx, t in enumerate(times):
-    try:
-        thetas = []
-        alphas = []
-        positions = []
-        velocities = []
-        theta0 = theta0_solutions[t_idx][0]  # 从数组中提取具体值
-        dtheta_dt_0 = diff_eq(theta0, t, r0, a)  # 直接使用微分方程求导数
-        thetas.append(theta0)
-        x, y, theta_val = calculate_position(theta0, r0, a)
-        positions.append((x, y, theta_val))
-        velocities.append(calculate_velocity(theta0, dtheta_dt_0, r0, a))
+        # 龙头的速度已知为 v0 = 1 m/s
+        velocities.append(v0)
 
-        for i in range(1, N + 1):
+        # 计算龙身节点的角位置、位置和速度
+        for i in range(1, N + 1):  # 遍历每个节点
+            # 计算角度增量 \alpha_i
             if i == 1:
                 alpha = solve_alpha(thetas[-1], L_prime, r0, a)
             else:
                 alpha = solve_alpha(thetas[-1], L, r0, a)
-            alphas.append(alpha)
-            theta = thetas[-1] + alpha
-            thetas.append(theta)
-            x, y, theta_val = calculate_position(theta, r0, a)
-            positions.append((x, y, theta_val))
-            velocities.append(calculate_velocity(theta, dtheta_dt_0, r0, a))  # 使用龙头部分的 dtheta_dt
+            
+            # 计算当前节点的角位置 \theta_i
+            theta_i = thetas[-1] + alpha
+            thetas.append(theta_i)
+            
+            # 计算当前节点的位置
+            x_i = r_theta(theta_i, r0, a) * np.cos(theta_i)
+            y_i = r_theta(theta_i, r0, a) * np.sin(theta_i)
+            positions.append((x_i, y_i))
 
-        for i, (position, alpha) in enumerate(zip(positions, alphas)):
-            x, y, theta = position
-            print(
-                f"Time: {t:.6f}, Joint: {i + 1}, Position: x = {x:.6f}, y = {y:.6f}, theta = {theta:.6f}, Alpha: {alpha:.6f}, Velocity: {velocities[i]:.6f}")
-            new_row=pd.DataFrame({'Time':t, 'Joint':i+1, 'Position_x':x, 'Position_y':y, 'Theta':theta, 'Alpha':alpha, 'Velocity':velocities[i]}, index=[0])
+            # 假设节点的角速度与前一个节点相同，计算线速度
+            v_i = calculate_velocity(theta_i, r0, a, omega0)
+            velocities.append(v_i)
+
+        # 输出当前时间点的每个节点信息
+        for i, (position, velocity) in enumerate(zip(positions, velocities)):
+            x, y = position
+            # print(f"Time: {t:.6f}, Node: {i}, Position: x = {x:.6f}, y = {y:.6f}, Velocity: {velocity:.6f}")
+            x=format(x,'.6f')
+            y=format(y,'.6f')
+            v=format(velocity,'.6f')
+            new_row=pd.DataFrame({'Time':t, 'Joint':i+1, 'Position_x':x, 'Position_y':y, 'Theta':thetas[i], 'Alpha':alpha, 'Velocity':velocities[i]}, index=[0])
             df = pd.concat([df, new_row], ignore_index=True)
+            
     except ValueError as e:
         print(f"Time: {t}, Error: {e}")
 
 
-# 将DataFrame保存为Excel文件
-df.to_excel('result11111.xlsx', index=False)
+# 主循环
+
+
+    # 将DataFrame保存为Excel文件
+    df.to_excel('result44444.xlsx', index=False)
